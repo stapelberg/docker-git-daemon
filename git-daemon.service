@@ -1,0 +1,19 @@
+[Unit]
+Description=git-daemon
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+StartLimitInterval=0
+ExecStartPre=/usr/bin/docker pull stapelberg/git-daemon:latest
+ExecStartPre=-/usr/bin/docker kill git-daemon
+ExecStartPre=-/usr/bin/docker rm -f git-daemon
+ExecStart=/usr/bin/docker run \
+  --name git-daemon \
+  --publish 9418:9418 \
+  --volume /media/persistent/git:/git:ro \
+  stapelberg/git-daemon
+
+[Install]
+WantedBy=multi-user.target
